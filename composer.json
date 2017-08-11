@@ -1,0 +1,12 @@
+{
+  "require-dev": {
+    "phpunit/phpunit": "*",
+    "giggsey/libphonenumber-for-php": "*"
+  },
+  "repositories": {
+    "packagist": {
+      "type": "composer",
+      "url": "https://packagist.phpcomposer.com"
+    }
+  }
+}
