@@ -7,5 +7,10 @@
             "email": "liu546hao@163.com"
         }
     ],
-    "require": {}
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "tank\\": "framework/"
+        }
+    }
 }
