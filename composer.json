@@ -1,7 +1,6 @@
 {
   "require-dev": {
-    "phpunit/phpunit": "*",
-    "giggsey/libphonenumber-for-php": "*"
+
   },
   "repositories": {
     "packagist": {
