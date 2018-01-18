@@ -1,11 +1,11 @@
 {
-  "require-dev": {
-    "codeception/codeception": "^2.3"
-  },
-  "repositories": {
-    "packagist": {
-      "type": "composer",
-      "url": "https://packagist.phpcomposer.com"
-    }
-  }
+    "name": "2lovecode/tank",
+    "description": "A simple php framework",
+    "authors": [
+        {
+            "name": "liuhao",
+            "email": "liu546hao@163.com"
+        }
+    ],
+    "require": {}
 }

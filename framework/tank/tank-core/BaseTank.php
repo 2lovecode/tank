@@ -65,6 +65,6 @@ class BaseTank
     public static function setClassMap(array $map = null)
     {
         self::$classMap['root'] = '../';
-        self::$classMap['tank'] = '../vendor/tank/tank-core/';
+        self::$classMap['tank'] = '../framework/tank/tank-core/';
     }
 }
