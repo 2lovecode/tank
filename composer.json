@@ -2,6 +2,12 @@
     "name": "2lovecode/tank",
     "description": "A simple php framework",
     "minimum-stability": "dev",
+    "keywords": [
+        "tank",
+        "framework"
+    ],
+    "type": "library",
+    "license": "BSD-3-Clause",
     "authors": [
         {
             "name": "liuhao",
