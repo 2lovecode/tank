@@ -1,3 +1,9 @@
 .idea
 .DS_Store
-
+!vendor/tank
+vendor/*
+!modules/app/controllers/TestController.php
+!modules/app/controllers/WelcomeController.php
+modules/app/controllers
+!tests/Test.php
+tests
