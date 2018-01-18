@@ -1,6 +1,6 @@
 {
   "require-dev": {
-
+    "codeception/codeception": "^2.3"
   },
   "repositories": {
     "packagist": {

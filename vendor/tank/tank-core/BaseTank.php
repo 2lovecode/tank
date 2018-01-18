@@ -21,12 +21,11 @@ class BaseTank
      * User: LiuHao<liu546hao@163.com>
      * Date: 2017-08-07
      * @param
-     * @param $className
      */
     public static function autoload($className)
     {
         self::setClassMap();
-       $realName = self::getClassMap($className);
+        $realName = self::getClassMap($className);
 
         if (file_exists($realName)) {
             include($realName);
@@ -39,7 +38,6 @@ class BaseTank
      * User: LiuHao<liu546hao@163.com>
      * Date:
      * @param
-     * @param $className
      * @return string
      */
     public static function getClassMap($className)
@@ -63,8 +61,6 @@ class BaseTank
      * Desc: 设置类的map
      * User: LiuHao<liu546hao@163.com>
      * Date:
-     * @param
-     * @param array|null $map
      */
     public static function setClassMap(array $map = null)
     {
