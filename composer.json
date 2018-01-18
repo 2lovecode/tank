@@ -1,13 +1,18 @@
 {
     "name": "2lovecode/tank",
     "description": "A simple php framework",
+    "minimum-stability": "dev",
     "authors": [
         {
             "name": "liuhao",
             "email": "liu546hao@163.com"
         }
     ],
-    "require": {},
+    "require": {
+        "php": ">=7.0.0"
+    },
+    "require-dev": {
+    },
     "autoload": {
         "psr-4": {
             "tank\\": "framework/"
