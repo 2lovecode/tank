@@ -11,5 +11,8 @@ namespace tank\di;
 
 class Container
 {
-
+    public function test()
+    {
+        echo 'Hello World!';
+    }
 }
