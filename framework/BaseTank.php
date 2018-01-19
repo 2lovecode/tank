@@ -39,7 +39,9 @@ class BaseTank
     public static $classMap = [];
 
     public static $aliasMap = [
-        '@@tank' => __DIR__,
+        '@@tank' => [
+            '@@tank' =>  __DIR__
+        ],
     ];
 
     public static $container;
@@ -59,7 +61,7 @@ class BaseTank
 
             $isMultipleLayers = $firstSeparatorPos !== false ? true : false;
 
-            $filePathHasAlias = strncmp($filePath, '@@', 2) !==0 ? false : true;
+            $filePathHasAlias = strncmp($filePath, '@@', 2) !== 0 ? false : true;
 
             $filePath = $filePathHasAlias ? static::parseAlias($filePath) : rtrim($filePath, static::CLASS_SEPARATOR.$dirSeparator);
 
@@ -70,7 +72,7 @@ class BaseTank
                 $rootNode = $alias;
             }
 
-            if (!isset(static::$aliasMap[$rootNode])) {
+            if (!isset(static::$aliasMap[$rootNode]) || empty(static::$aliasMap[$rootNode])) {
                 static::$aliasMap[$rootNode] = [
                     $alias => $filePath,
                 ];
@@ -108,26 +110,52 @@ class BaseTank
 
     public static function parseAlias($alias)
     {
-        $filePath = '';
+        if (strncmp($alias, '@@', 2)) {
+            return $alias;
+        }
 
-        return $filePath;
+        $dirSeparator = static::getDirSeparator();
+
+        $firstSeparatorPos = strpos($alias, $dirSeparator);
+
+        $isMultipleLayers = $firstSeparatorPos !== false ? true : false;
+
+        if ($isMultipleLayers) {
+            $rootNode = substr($alias, 0, $firstSeparatorPos);
+        } else {
+            $rootNode = $alias;
+        }
+
+        if (isset(static::$aliasMap[$rootNode]) && !empty(static::$aliasMap[$rootNode])) {
+            foreach (static::$aliasMap[$rootNode] as $eachAlias => $eachFilePath) {
+                if (strpos($alias . $dirSeparator, $eachAlias . $dirSeparator) === 0) {
+                    return $eachFilePath . substr($alias, strlen($eachAlias));
+                }
+            }
+        }
     }
 
     public static function autoload($className)
     {
+        $dirSeparator = static::getDirSeparator();
         //备注：框架类的自动加载,交由composer处理.如果不想使用composer处理,必须使用别名机制.
         if (isset(static::$classMap[$className])) {
             $classFilePath = static::$classMap[$className];
             if (strpos($classFilePath, '@@') !== false) {
                 $classFilePath = static::parseAlias($classFilePath);
             }
-        } else if(strpos($className, '\\') !== false) {
-
+        } else if(strpos($className, static::CLASS_SEPARATOR) !== false) {
+            $classFilePath = static::parseAlias('@@' . str_replace(static::CLASS_SEPARATOR, $dirSeparator, $className) . '.php');
+            if ($classFilePath === false || !is_file($classFilePath)) {
+                return;
+            }
         } else {
             return;
         }
 
-        include($classFilePath);
+        if (isset($classFilePath) && file_exists($classFilePath)) {
+            include_once($classFilePath);
+        }
 
         if (TANK_DEBUG) {
             if (!class_exists($className, false) && !interface_exists($className, false) && !trait_exists($className, false)) {

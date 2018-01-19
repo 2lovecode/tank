@@ -4,12 +4,15 @@
  * Date: 18-1-19
  * Time: 下午3:59
  */
-use PHPUnit\Framework\TestCase;
+namespace tankunit\framework;
 
-class BaseTankTest extends TestCase
+use tankunit\TankTestCase;
+use Tank;
+
+class BaseTankTest extends TankTestCase
 {
     public function testRegisterAlias()
     {
-
+        print_r(Tank::$aliasMap);
     }
 }
