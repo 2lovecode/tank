@@ -8,6 +8,30 @@
 
 namespace tank;
 
+/**
+ * Class BaseTank
+ * @package tank
+ *
+ * BaseTank 作为框架最重要的类,提供一些组织框架的方法
+ *
+ * 属性:
+ * 1.$app:      持有application对象,是一个单例
+ * 2.$classMap: 注册了类的索引,数组键是类名,数组值是对应的类文件路径
+ * 3.$aliasMap: 别名索引,所有注册的别名,在这里体现
+ * 4.$container:DI容器,在创建对象时会使用它提供的依赖注入机制
+ *
+ * 方法:
+ * 1.提供注册别名的方法:     registerAlias
+ * 2.提供解析别名的方法:     parseAlias
+ * 2.提供类的自动加载机制:   autoload
+ * 3.提供创建对象的方法,基于DI:        generateObject
+ * 4.提供给对象属性批量赋值的方法:      batchSetProperty
+ *
+ *
+ */
+use tank\base\ClassNotExistsException;
+
+defined('TANK_DEBUG') || define('TANK_DEBUG', false);
 
 class BaseTank
 {
@@ -15,56 +39,117 @@ class BaseTank
 
     public static $classMap = [];
 
-    /**
-     * Name: autoload
-     * Desc: 类的自动加载机制
-     * User: LiuHao<liu546hao@163.com>
-     * Date: 2017-08-07
-     * @param
-     */
+    public static $aliasMap = [
+        '@@tank' => __DIR__,
+    ];
+
+    public static $container;
+
+    const CLASS_SEPARATOR = '\\';
+
+    public static function registerAlias($alias, $filePath = '')
+    {
+        if (!empty($filePath)) {
+            $dirSeparator = static::getDirSeparator();
+
+            if (strncmp($alias, '@@', 2) !== 0) {
+                $alias = '@@'.$alias;
+            }
+
+            $firstSeparatorPos = strpos($alias, $dirSeparator);
+
+            $isMultipleLayers = $firstSeparatorPos !== false ? true : false;
+
+            $filePathHasAlias = strncmp($filePath, '@@', 2) !==0 ? false : true;
+
+            $filePath = $filePathHasAlias ? static::parseAlias($filePath) : rtrim($filePath, static::CLASS_SEPARATOR.$dirSeparator);
+
+
+            if ($isMultipleLayers) {
+                $rootNode = substr($alias, 0, $firstSeparatorPos);
+            } else {
+                $rootNode = $alias;
+            }
+
+            if (!isset(static::$aliasMap[$rootNode])) {
+                static::$aliasMap[$rootNode] = [
+                    $alias => $filePath,
+                ];
+            } else if (is_array(static::$aliasMap[$rootNode])){
+                static::$aliasMap[$rootNode][$alias] = $filePath;
+                krsort(static::$aliasMap[$rootNode]);
+            }
+        }
+    }
+
+    public static function deleteAlias($alias)
+    {
+        $dirSeparator = static::getDirSeparator();
+
+        if (strncmp($alias, '@@', 2) !== 0) {
+            $alias = '@@'.$alias;
+        }
+
+        $firstSeparatorPos = strpos($alias, $dirSeparator);
+
+        $isMultipleLayers = $firstSeparatorPos !== false ? true : false;
+
+        if ($isMultipleLayers) {
+            $rootNode = substr($alias, 0, $firstSeparatorPos);
+        } else {
+            $rootNode = $alias;
+        }
+
+        if (isset(static::$aliasMap[$rootNode])) {
+            if (!empty(static::$aliasMap[$rootNode])) {
+                unset(static::$aliasMap[$rootNode][$alias]);
+            }
+        }
+    }
+
+    public static function parseAlias($alias)
+    {
+        $filePath = '';
+
+        return $filePath;
+    }
+
     public static function autoload($className)
     {
-        self::setClassMap();
-        $realName = self::getClassMap($className);
+        //备注：框架类的自动加载,交由composer处理.如果不想使用composer处理,必须使用别名机制.
+        if (isset(static::$classMap[$className])) {
+            $classFilePath = static::$classMap[$className];
+            if (strpos($classFilePath, '@@') !== false) {
+                $classFilePath = static::parseAlias($classFilePath);
+            }
+        } else if(strpos($className, '\\') !== false) {
 
-        if (file_exists($realName)) {
-            include($realName);
+        } else {
+            return;
+        }
+
+        include($classFilePath);
+
+        if (TANK_DEBUG) {
+            if (!class_exists($className, false) && !interface_exists($className, false) && !trait_exists($className, false)) {
+                throw new ClassNotExistsException("Class ".$className." not exists in file: $classFilePath");
+            }
         }
     }
 
-    /**
-     * Name: getClassMap
-     * Desc:
-     * User: LiuHao<liu546hao@163.com>
-     * Date:
-     * @param
-     * @return string
-     */
-    public static function getClassMap($className)
+    public static function generateObject()
     {
-        $realName = '';
-        $classStr = trim($className, '\\');
-        $location = strpos($classStr, '\\');
-        $prefix = substr($classStr, 0, $location);
-        $suffix = substr($classStr, $location);
-        $classMap = self::$classMap;
-        if (isset($classMap[$prefix])) {
-            $realName = $classMap[$prefix].implode('/', explode('\\', trim($suffix, '\\'))).'.php';
-        }
-
-        return $realName;
 
     }
 
-    /**
-     * Name: setClassMap
-     * Desc: 设置类的map
-     * User: LiuHao<liu546hao@163.com>
-     * Date:
-     */
-    public static function setClassMap(array $map = null)
+    public static function batchSetProperty()
     {
-        self::$classMap['root'] = '../';
-        self::$classMap['tank'] = '../framework/tank/tank-core/';
+
     }
+
+    public static function getDirSeparator()
+    {
+        return '/';
+    }
+
 }

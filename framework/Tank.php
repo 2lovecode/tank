@@ -1,7 +1,7 @@
 <?php
 
-
 require(__DIR__ . '/BaseTank.php');
+
 class Tank extends \tank\BaseTank
 {
 }
