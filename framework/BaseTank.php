@@ -22,9 +22,9 @@ namespace tank;
  * 方法:
  * 1.提供注册别名的方法:     registerAlias
  * 2.提供解析别名的方法:     parseAlias
- * 2.提供类的自动加载机制:   autoload
- * 3.提供创建对象的方法,基于DI:        generateObject
- * 4.提供给对象属性批量赋值的方法:      batchSetProperty
+ * 3.提供类的自动加载机制:   autoload
+ * 4.提供创建对象的方法,基于DI:        generateObject
+ * 5.提供给对象属性批量赋值的方法:      batchSetProperty
  *
  *
  */
