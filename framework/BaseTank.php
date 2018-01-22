@@ -169,9 +169,12 @@ class BaseTank
 
     }
 
-    public static function batchSetProperty()
+    public static function batchSetProperty($object, array $property)
     {
-
+        foreach ($property as $name => $value) {
+            $object->$name = $value;
+        }
+        return $object;
     }
 
     public static function getDirSeparator()
