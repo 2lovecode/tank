@@ -7,19 +7,19 @@
 namespace tankunit\framework;
 
 use tankunit\TankTestCase;
-use Tank;
+use tank\BaseTank;
 
 class BaseTankTest extends TankTestCase
 {
     public function testRegisterAlias()
     {
-        $beforeArray = Tank::$aliasMap;
+        $beforeArray = BaseTank::$aliasMap;
 
-        Tank::registerAlias('@@a', 'p1/p2');
-        Tank::registerAlias('@@a/b', 'p2/p3');
-        Tank::registerAlias('@@c', 'p4/p5');
-        Tank::registerAlias('@@c/d/f', 'p6/p7');
-        Tank::registerAlias('@@d', '@@c/p6/p7');
+        BaseTank::registerAlias('@@a', 'p1/p2');
+        BaseTank::registerAlias('@@a/b', 'p2/p3');
+        BaseTank::registerAlias('@@c', 'p4/p5');
+        BaseTank::registerAlias('@@c/d/f', 'p6/p7');
+        BaseTank::registerAlias('@@d', '@@c/p6/p7');
         $afterArray = [
             '@@a' => [
                 '@@a/b' => 'p2/p3',
@@ -35,15 +35,15 @@ class BaseTankTest extends TankTestCase
         ];
 
         $afterArray = array_merge($beforeArray, $afterArray);
-        $this->assertEquals($afterArray, Tank::$aliasMap);
+        $this->assertEquals($afterArray, BaseTank::$aliasMap);
     }
 
     public function testParseAlias()
     {
-        Tank::registerAlias('@@c', 'p1/p2');
-        Tank::registerAlias('@@c/d', 'p2/p3');
+        BaseTank::registerAlias('@@c', 'p1/p2');
+        BaseTank::registerAlias('@@c/d', 'p2/p3');
 
-        $this->assertEquals('p1/p2/aa', Tank::parseAlias('@@c/aa'));
-        $this->assertEquals('p2/p3/aa', Tank::parseAlias('@@c/d/aa'));
+        $this->assertEquals('p1/p2/aa', BaseTank::parseAlias('@@c/aa'));
+        $this->assertEquals('p2/p3/aa', BaseTank::parseAlias('@@c/d/aa'));
     }
 }
