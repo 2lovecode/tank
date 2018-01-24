@@ -1,8 +1,8 @@
 <?php
 /**
  * User: liuhao
- * Date: 18-1-22
- * Time: 下午4:14
+ * Date: 18-1-24
+ * Time: 下午3:25
  */
 
 namespace tankunit\framework\base;
@@ -10,7 +10,7 @@ namespace tankunit\framework\base;
 
 use tankunit\TankTestCase;
 
-class BaseObjectTest extends TankTestCase
+class BaseEventTest extends TankTestCase
 {
     public function testTemp()
     {
