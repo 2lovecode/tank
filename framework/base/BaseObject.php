@@ -41,24 +41,55 @@ class BaseObject
 
     }
 
-    public function __set()
+    public function __set($name, $value)
     {
+        $setter = 'set'.ucfirst($name);
+        $getter = 'get'.ucfirst($name);
 
+        if (method_exists($this, $setter)) {
+            return $this->$setter($value);
+        } else if (method_exists($this, $getter)) {
+            throw new Exception('read-only property!');
+        } else {
+            throw new Exception('unknown property!');
+        }
     }
 
-    public function __get()
+    public function __get($name)
     {
+        $setter = 'set'.ucfirst($name);
+        $getter = 'get'.ucfirst($name);
 
+        if (method_exists($this, $getter)) {
+            return $this->$getter();
+        } else if (method_exists($this, $setter)) {
+            throw new Exception('write-only property!');
+        } else {
+            throw new Exception('unknown property!');
+        }
     }
 
-    public function __isset()
+    public function __isset($name)
     {
+        $getter = 'get'.ucfirst($name);
 
+        if (method_exists($this, $getter)) {
+            return $this->$getter() !== null;
+        } else {
+            return false;
+        }
     }
 
-    public function __unset()
+    public function __unset($name)
     {
+        $setter = 'set'.ucfirst($name);
+        $getter = 'get'.ucfirst($name);
 
+        if (method_exists($this, $setter)) {
+            return $this->$setter(null);
+        } else if (method_exists($this, $getter)) {
+            throw new Exception('read-only property!');
+        }
     }
 
 }
