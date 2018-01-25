@@ -14,6 +14,8 @@ namespace tank\base;
  * 1.添加事件
  * 2.添加行为
  */
+use Tank;
+
 class Component extends BaseObject
 {
     private $eventMap = [];
@@ -24,40 +26,18 @@ class Component extends BaseObject
     {
         $handlerList = isset($this->eventMap[$eventName]) ? $this->eventMap[$eventName] : [];
         $insertValue = [$eventHandler, $onData];
-        $this->eventMap[$eventName] = $this->appendElementByPosition($handlerList, $handlerSequence, $insertValue);
+        $this->eventMap[$eventName] = Tank::appendElementByPosition($handlerList, $handlerSequence, $insertValue);
     }
 
-    public function getEventMap()
+    public function getEventHandlers($eventName)
     {
-        return $this->eventMap;
-    }
+        $objectEventHandler = isset($this->eventMap[$eventName]) ? $this->eventMap[$eventName] : [];
+        $classEventHandler = BaseEvent::getClassEventHandlers($this, $eventName);
 
-    public function appendElementByPosition(array $input, int $postion = -1, $insertValue)
-    {
-        $len = count($input);
-        $result = [];
-
-        if ($postion < 0) {
-            $index = $len + $postion + 1;
-        } else if ($postion > 0) {
-            $index = $postion - 1;
-        } else {
-            return $input;
+        foreach ($classEventHandler as $eachClasshandler) {
+            array_push($objectEventHandler, $eachClasshandler);
         }
-
-        if ($index === $len) {
-            array_push($input, $insertValue);
-            $result = $input;
-        } else {
-            foreach ($input as $key => $value) {
-                if ($key === $index) {
-                    $result[] = $insertValue;
-                }
-                $result[] = $value;
-            }
-        }
-
-        return $result;
+        return $objectEventHandler;
     }
 
     public function unbindEvent($eventName, $eventHandler = null)
@@ -107,5 +87,7 @@ class Component extends BaseObject
                 }
             }
         }
+
+        BaseEvent::triggerClassEvent($this, $eventName, $eventObject);
     }
 }

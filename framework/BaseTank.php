@@ -182,4 +182,31 @@ class BaseTank
         return '/';
     }
 
+    public static function appendElementByPosition(array $input, int $postion = -1, $insertValue)
+    {
+        $len = count($input);
+        $result = [];
+
+        if ($postion < 0) {
+            $index = $len + $postion + 1;
+        } else if ($postion > 0) {
+            $index = $postion - 1;
+        } else {
+            return $input;
+        }
+
+        if ($index === $len) {
+            array_push($input, $insertValue);
+            $result = $input;
+        } else {
+            foreach ($input as $key => $value) {
+                if ($key === $index) {
+                    $result[] = $insertValue;
+                }
+                $result[] = $value;
+            }
+        }
+
+        return $result;
+    }
 }

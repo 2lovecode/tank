@@ -13,29 +13,29 @@ use tank\base\Component;
 
 class ComponentTest extends TankTestCase
 {
-    public $testValue = null;
-
     public function testBindEvent()
     {
         $component = new Component();
 
         $component->bindEvent('aaa', 'abc', ['a', 'b']);
         $component->bindEvent('aaa', 'ccc', ['a', 'b'], 1);
+        $expect = [
+            [
+                'ccc',
+                [
+                    'a',
+                    'b'
+                ]
+            ],
+            [
+                'abc',
+                [
+                    'a',
+                    'b'
+                ]
+            ]
+        ];
 
-        $this->assertEquals(['aaa' => [['ccc', ['a', 'b']], ['abc', ['a', 'b']]]], $component->eventMap);
-    }
-
-    public function testTriggerEvent()
-    {
-        $component = new Component();
-        $component->bindEvent('aaa', [$this, 'callBackFunction'], ['a']);
-        $component->triggerEvent('aaa');
-
-        $this->assertEquals(123, $this->testValue);
-    }
-
-    public function callBackFunction()
-    {
-        $this->testValue = 123;
+        $this->assertEquals($expect, $component->getEventHandlers('aaa'));
     }
 }
