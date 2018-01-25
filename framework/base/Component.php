@@ -90,4 +90,45 @@ class Component extends BaseObject
 
         BaseEvent::triggerClassEvent($this, $eventName, $eventObject);
     }
+
+    public function getBehaviors() :array
+    {
+        return [];
+    }
+
+    public function loadBehaviors()
+    {
+        if (!$this->behaviorWasLoad()) {
+            foreach ($this->getBehaviors() as $behaviorName => $behaviorDefine) {
+
+            }
+        }
+    }
+
+    public function behaviorWasLoad()
+    {
+        return !empty($this->behaviorMap);
+    }
+
+    public function attachSingleBehavior($behaviorName, $behaviorDefine)
+    {
+
+    }
+
+    public function batchAttachBehavior(array $behaviors)
+    {
+        foreach ($behaviors as $behaviorName => $behaviorDefine) {
+            $this->attachSingleBehavior($behaviorName, $behaviorDefine);
+        }
+    }
+
+    public function detachBehavior()
+    {
+
+    }
+
+    public function batchDetachBehavior()
+    {
+        
+    }
 }

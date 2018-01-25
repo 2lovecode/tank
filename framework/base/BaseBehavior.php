@@ -10,6 +10,33 @@ namespace tank\base;
 
 class BaseBehavior extends BaseObject
 {
-    public function testTemp()
-    {}
+    public $subject;
+
+    public function getEvents()
+    {
+        return [];
+    }
+
+    public function attach(Component $subject)
+    {
+        $this->subject = $subject;
+        foreach ($this->getEvents() as $eventName => $eventHandler) {
+            $eventHandler = is_string($eventHandler) ? [$this, $eventHandler] : $eventHandler;
+            $this->subject->bindEvent($eventName, $eventHandler);
+        }
+    }
+
+    public function detach()
+    {
+        if ($this->subject) {
+            foreach ($this->getEvents() as $eventName => $eventHandler) {
+                $eventHandler = is_string($eventHandler) ? [$this, $eventHandler] : $eventHandler;
+                $this->subject->unbindEvent($eventName, $eventHandler);
+            }
+            $this->subject = null;
+        }
+
+    }
+
+
 }
