@@ -24,6 +24,8 @@ class Component extends BaseObject
 
     public function bindEvent($eventName, $eventHandler, $onData = [], $handlerSequence = -1)
     {
+        $this->loadBehaviors();
+
         $handlerList = isset($this->eventMap[$eventName]) ? $this->eventMap[$eventName] : [];
         $insertValue = [$eventHandler, $onData];
         $this->eventMap[$eventName] = Tank::appendElementByPosition($handlerList, $handlerSequence, $insertValue);
@@ -31,6 +33,8 @@ class Component extends BaseObject
 
     public function getEventHandlers($eventName)
     {
+        $this->loadBehaviors();
+
         $objectEventHandler = isset($this->eventMap[$eventName]) ? $this->eventMap[$eventName] : [];
         $classEventHandler = BaseEvent::getClassEventHandlers($this, $eventName);
 
@@ -42,6 +46,8 @@ class Component extends BaseObject
 
     public function unbindEvent($eventName, $eventHandler = null)
     {
+        $this->loadBehaviors();
+
         $result = false;
         if (empty($this->eventMap[$eventName])) {
             $result = false;
@@ -66,6 +72,8 @@ class Component extends BaseObject
 
     public function triggerEvent($eventName, BaseEvent $eventObject = null)
     {
+        $this->loadBehaviors();
+
         if (!empty($this->eventMap[$eventName])) {
             if (is_null($eventObject)) {
                 $eventObject = new BaseEvent();
@@ -100,7 +108,7 @@ class Component extends BaseObject
     {
         if (!$this->behaviorWasLoad()) {
             foreach ($this->getBehaviors() as $behaviorName => $behaviorDefine) {
-
+                $this->attachSingleBehavior($behaviorName, $behaviorDefine);
             }
         }
     }
@@ -112,23 +120,53 @@ class Component extends BaseObject
 
     public function attachSingleBehavior($behaviorName, $behaviorDefine)
     {
+        $this->loadBehaviors();
 
+        if (!is_string($behaviorName)) {//行为必须命名,否则无法绑定
+            return;
+        }
+
+        if (!($behaviorDefine instanceof BaseBehavior)) {
+            $behaviorDefine = Tank::generateObject($behaviorDefine);
+        }
+
+        if (isset($this->behaviorMap[$behaviorName])) {
+            $this->behaviorMap[$behaviorName]->detach();//已经存在的同名行为,先解除绑定
+        }
+        $behaviorDefine->attach($this);
+        $this->behaviorMap[$behaviorName] = $behaviorDefine;
+
+        return $behaviorDefine;
     }
 
     public function batchAttachBehavior(array $behaviors)
     {
+        $this->loadBehaviors();
+
         foreach ($behaviors as $behaviorName => $behaviorDefine) {
             $this->attachSingleBehavior($behaviorName, $behaviorDefine);
         }
     }
 
-    public function detachBehavior()
+    public function detachBehavior($behaviorName)
     {
+        $this->loadBehaviors();
 
+        if (isset($this->behaviorMap[$behaviorName])) {
+            $behaviorObject = $this->behaviorMap[$behaviorName];
+            unset($this->behaviorMap[$behaviorName]);
+            $behaviorObject->detach();
+            return $behaviorObject;
+        } else {
+            return null;
+        }
     }
 
-    public function batchDetachBehavior()
+    public function batchDetachBehavior(array $behaviorNames)
     {
-        
+        $this->loadBehaviors();
+        foreach ($behaviorNames as $eachBehaviorName) {
+            $this->detachBehavior($eachBehaviorName);
+        }
     }
 }

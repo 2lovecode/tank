@@ -164,7 +164,7 @@ class BaseTank
         }
     }
 
-    public static function generateObject()
+    public static function generateObject($defineConfig)
     {
 
     }
