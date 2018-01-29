@@ -169,4 +169,80 @@ class Component extends BaseObject
             $this->detachBehavior($eachBehaviorName);
         }
     }
+
+    public function __set($proName, $value)
+    {
+        $setter = 'set'.ucfirst($proName);
+
+        if (method_exists($this, $setter)) {
+            $this->$setter($value);
+        } else {
+            $this->loadBehaviors();
+            foreach ($this->behaviorMap as $behavior) {
+                if ($behavior->canSetProperty($proName)) {
+                    $behavior->$proName = $value;
+                    return;
+                }
+            }
+        }
+    }
+
+    public function __get($proName)
+    {
+        $getter = 'get'.ucfirst($proName);
+        if (method_exists($this, $getter)) {
+            return $this->$getter();
+        } else {
+            $this->loadBehaviors();
+            foreach ($this->behaviorMap as $behavior) {
+                if ($behavior->canGetProperty($proName)) {
+                    return $behavior->$proName;
+                }
+            }
+        }
+    }
+
+    public function __isset($proName)
+    {
+        $getter = 'get'.ucfirst($proName);
+        if (method_exists($this, $getter)) {
+            return $this->$getter() !== null;
+        } else {
+            $this->loadBehaviors();
+            foreach ($this->behaviorMap as $behavior) {
+                if ($behavior->canGetProperty($proName)) {
+                    return $behavior->$proName !== null;
+                }
+            }
+        }
+        return false;
+    }
+
+    public function __unset($proName)
+    {
+        $setter = 'set'.ucfirst($proName);
+
+        if (method_exists($this, $setter)) {
+            $this->$setter(null);
+            return;
+        } else {
+            $this->loadBehaviors();
+            foreach ($this->behaviorMap as $behavior) {
+                if ($behavior->canSetProperty($proName)) {
+                    $behavior->$proName = null;
+                    return;
+                }
+            }
+        }
+    }
+
+    public function __call($methodName, $params)
+    {
+        $this->loadBehaviors();
+        foreach ($this->behaviorMap as $object) {
+            if (method_exists($object, $methodName)) {
+                return call_user_func_array([$object, $methodName], $params);
+            }
+        }
+    }
 }
