@@ -8,9 +8,10 @@
 namespace tank\di;
 
 
+use tank\base\Component;
 use tank\base\Exception;
 
-class Container
+class Container extends Component
 {
     private $defineMap = [];
 
