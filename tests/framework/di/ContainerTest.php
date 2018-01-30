@@ -7,7 +7,6 @@
 
 namespace tankunit\framework\di;
 
-
 use tankunit\framework\BaseTankTest;
 
 class ContainerTest extends BaseTankTest
