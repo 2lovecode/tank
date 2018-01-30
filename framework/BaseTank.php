@@ -29,6 +29,7 @@ namespace tank;
  *
  */
 use tank\base\ClassNotExistsException;
+use tank\base\Exception;
 
 defined('TANK_DEBUG') || define('TANK_DEBUG', false);
 
@@ -164,9 +165,19 @@ class BaseTank
         }
     }
 
-    public static function generateObject($defineConfig)
+    public static function generateObject($defineConfig, array $params = [])
     {
-
+        if (is_string($defineConfig)) {
+            return static::$container->resolve($defineConfig, $params);
+        } elseif (is_array($defineConfig) && isset($defineConfig['class'])) {
+            $class = $defineConfig['class'];
+            unset($defineConfig['class']);
+            return static::$container->resolve($class, $params, $defineConfig);
+        } elseif (is_callable($defineConfig, true)) {
+            return call_user_func($defineConfig, $params);
+        } else {
+            throw new Exception('Generate Object Error!');
+        }
     }
 
     public static function batchSetProperty($object, array $property)
