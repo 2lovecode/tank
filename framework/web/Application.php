@@ -8,6 +8,8 @@
 namespace tank\web;
 
 use Tank;
+use tank\pipeline\RoutingPipeline;
+use tank\pipeline\RoutingProcessor;
 
 class Application
 {
@@ -25,17 +27,18 @@ class Application
         }
     }
 
-    /**
-     * Name: run
-     * Desc: 接收请求,处理数据,返回结果
-     * User: LiuHao<liu546hao@163.com>
-     * Date:
-     */
     public function run()
     {
         try {
             //获取请求
-            $request = new Request();
+            $request = new WebRequest();
+            //
+            $routeProcessor = new RoutingProcessor();
+
+            $routePipeline = new RoutingPipeline($routeProcessor, $request);
+
+            $routePipeline->registerStage();
+
             //路由解析
             $urlManager = new UrlManager();
             list($module, $controller, $action) = $urlManager->parseUrl($request);
@@ -53,12 +56,6 @@ class Application
 
     public function createController($module, $controller)
     {
-        $className = 'root\modules\\'.$module.'\controllers\\'.ucfirst($controller).'Controller';
-        if (class_exists($className)) {
-            $object = new $className();
-            return $object;
-        } else {
-            throw new \Exception('Controller '.ucfirst($controller).'Controller is not exists!');
-        }
+        
     }
 }

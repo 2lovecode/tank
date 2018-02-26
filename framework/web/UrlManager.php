@@ -9,6 +9,8 @@ namespace tank\web;
 
 
 
+use tank\http\BaseRequest;
+
 class UrlManager
 {
     private $urlFlag = 'r';
@@ -24,7 +26,7 @@ class UrlManager
      * User: LiuHao<liu546hao@163.com>
      * Date:
      */
-    public function parseUrl(Request $request)
+    public function parseUrl(BaseRequest $request)
     {
         $module = $this->defaultModule;
         $controller = $this->defaultController;
